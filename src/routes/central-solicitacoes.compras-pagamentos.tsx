@@ -156,8 +156,8 @@ function ComprasPagamentosPage() {
 
   return (
     <div className="p-6 md:p-10 w-full max-w-full mx-auto">
-      <Link to="/central-solicitacoes" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
-        <ChevronLeft className="size-4" /> Voltar para central de solicitações
+      <Link to="/central-solicitacoes" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground/80 -mt-2 mb-6">
+        <ChevronLeft className="size-3" /> Voltar para central de solicitações
       </Link>
 
       <div className="mb-6">

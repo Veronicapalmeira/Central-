@@ -35,8 +35,8 @@ function CadastroMacroentregasPage() {
 
   return (
     <div className="p-6 md:p-10 max-w-6xl mx-auto">
-      <Link to="/central-solicitacoes" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
-        <ChevronLeft className="size-4" /> Voltar para central de solicitações
+      <Link to="/central-solicitacoes" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground/80 -mt-2 mb-6">
+        <ChevronLeft className="size-3" /> Voltar para central de solicitações
       </Link>
       <div className="mb-8">
         <div className="text-xs uppercase tracking-wider text-primary font-semibold">Central de Solicitações</div>
@@ -105,8 +105,8 @@ export default CadastroMacroentregasPage;
 
     return (
       <div className="p-6 md:p-10 max-w-5xl mx-auto">
-        <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
-          <ChevronLeft className="size-4" /> Voltar para projetos
+        <button onClick={onBack} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground/80 -mt-2 mb-6">
+          <ChevronLeft className="size-3" /> Voltar para projetos
         </button>
 
         <div className="mb-6">
@@ -252,7 +252,8 @@ export default CadastroMacroentregasPage;
           <div className="text-sm">Quando você enviar este formulário, o proprietário verá seu nome e endereço de email.</div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="rounded-xl border bg-white p-6 mb-6">
+          <div className="grid grid-cols-1 gap-4">
           <label className="block">
             <div className="text-sm font-medium">1. Título</div>
             <div className="text-xs text-muted-foreground">Ex: Execução de Macroentrega</div>
@@ -288,6 +289,7 @@ export default CadastroMacroentregasPage;
           </label>
 
           {/* Nome e email removidos — informações do usuário serão obtidas pelo sistema */}
+          </div>
         </div>
 
         </form>
