@@ -46,8 +46,8 @@ function CadastroMacroentregasPage() {
         </p>
       </div>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1 max-w-md">
+      <div className="w-full mb-6">
+        <div className="relative w-full">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={query}
@@ -55,9 +55,6 @@ function CadastroMacroentregasPage() {
             placeholder="Buscar projeto..."
             className="w-full h-11 pl-10 pr-4 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
-        </div>
-        <div className="text-sm text-muted-foreground hidden md:block">
-          {projects.length} {projects.length === 1 ? "projeto" : "projetos"} em execução
         </div>
       </div>
 

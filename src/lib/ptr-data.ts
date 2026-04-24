@@ -5,7 +5,7 @@ export type Project = {
   name: string;
   client: string;
   coordinator: string;
-  role: "Coordenador" | "Vice-Coordenador" | "Líder Técnico";
+  role: "Coordenador" | "Vice-Coordenador";
   status: ProjectStatus;
   funding: string;
   vigencia: string;
@@ -87,7 +87,7 @@ export const PROJECTS: Project[] = [
   { id: "p1", name: "Sistema de Navegação Autônoma para VANTs", client: "EMBRAPII", coordinator: "Erika Morais", role: "Coordenador", status: "em_execucao", funding: "EMBRAPII", vigencia: "01/03/2024 — 28/02/2026" },
   { id: "p2", name: "IA para Detecção de Plágio Acadêmico", client: "SEBRAE", coordinator: "Renata Braga", role: "Coordenador", status: "em_execucao", funding: "SEBRAE", vigencia: "01/06/2024 — 31/05/2026" },
   { id: "p3", name: "Plataforma Wave Testing", client: "EMPRESA", coordinator: "Juliana Costa", role: "Vice-Coordenador", status: "em_execucao", funding: "EMPRESA", vigencia: "15/01/2025 — 14/01/2027" },
-  { id: "p4", name: "Portal CEIA — Gestão de Projetos", client: "CEIA / UFG", coordinator: "Anderson Lima", role: "Líder Técnico", status: "em_execucao", funding: "CEIA", vigencia: "01/02/2025 — 31/01/2026" },
+  { id: "p4", name: "Portal CEIA — Gestão de Projetos", client: "CEIA / UFG", coordinator: "Anderson Lima", role: "Coordenador", status: "em_execucao", funding: "CEIA", vigencia: "01/02/2025 — 31/01/2026" },
   { id: "p5", name: "Análise de Imagens Médicas com Deep Learning", client: "EMBRAPII", coordinator: "Renata Braga", role: "Coordenador", status: "encerrado", funding: "EMBRAPII", vigencia: "01/01/2023 — 31/12/2024" },
 ];
 
