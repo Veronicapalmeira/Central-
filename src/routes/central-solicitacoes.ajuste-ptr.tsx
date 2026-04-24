@@ -149,13 +149,26 @@ function TabButton({ active, onClick, icon, children }: { active: boolean; onCli
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors",
-        active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-      )}
+      className={cn("flex-1 relative flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium -mb-px")}
     >
-      {icon}
-      <span className="truncate">{children}</span>
+      <div className={cn("flex items-center gap-2", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+        {icon}
+        <span className="truncate">{children}</span>
+      </div>
+
+      {/* Animated underline that grows horizontally from center */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden">
+        <span
+          style={{
+            display: "block",
+            height: "100%",
+            backgroundColor: "var(--primary)",
+            transform: active ? "scaleX(1)" : "scaleX(0)",
+            transformOrigin: "center",
+            transition: "transform 360ms cubic-bezier(.2,.9,.2,1)",
+          }}
+        />
+      </div>
     </button>
   );
 }

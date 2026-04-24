@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { Project, BolsaSlot, RubricaSelection } from "@/lib/ptr-data";
 import { cn } from "@/lib/utils";
+import HighlightedTextarea from "@/components/ui/highlighted-textarea";
 import { ParticipantPicker } from "./ParticipantPicker";
 import { RubricaPicker } from "./RubricaPicker";
 import { InclusionSection, type InclusionLine } from "./InclusionSection";
@@ -440,13 +441,15 @@ function SectionCard({
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={addBlank}
-                className={cn(
-                  "rounded-lg border-2 px-3 py-3 text-left transition-all hover:shadow-sm inline-flex items-center gap-2",
-                  "border-primary/30 bg-background hover:border-primary hover:bg-primary-soft/30 text-sm font-semibold text-foreground"
-                )}
+                className="w-full text-left inline-flex items-start gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <FileEdit className="size-4" />
-                <div className="text-sm">Adicionar item em branco (template editável)</div>
+                <div className="flex items-center justify-center size-10 rounded-md bg-primary/10 text-primary shrink-0">
+                  <FileEdit className="size-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm">Adicionar item em branco (template editável)</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Use o template para preencher texto livremente</div>
+                </div>
               </button>
             </div>
           )}
@@ -502,11 +505,12 @@ function LineCard({
           <Trash2 className="size-4" />
         </button>
       </div>
-      <textarea
+      <HighlightedTextarea
         value={line.text}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(v) => onChange(v)}
         rows={2}
-        className="w-full rounded-md border bg-background p-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+        className=""
+        placeholder=""
       />
     </div>
   );

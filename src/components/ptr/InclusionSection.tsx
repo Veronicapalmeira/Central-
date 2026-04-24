@@ -5,6 +5,7 @@ import {
   X,
   Search,
   UserPlus,
+  UserCheck,
   FilePlus2,
   FileEdit,
   ListChecks,
@@ -19,7 +20,9 @@ import {
 import type { Project, BolsaSlot } from "@/lib/ptr-data";
 import { BOLSA_SLOTS } from "@/lib/ptr-data";
 import { cn } from "@/lib/utils";
+import HighlightedTextarea from "@/components/ui/highlighted-textarea";
 import { TALENTS, type Talent } from "./TalentSearch";
+import TalentPickerModal from "./TalentPickerModal";
 import { NewSlotDialog, type NewSlotDraft } from "./NewSlotDialog";
 
 /**
@@ -55,13 +58,39 @@ function templateSlot(slot: BolsaSlot, talent?: Talent): string {
   const nome = talent?.name ?? "[Nome do bolsista]";
   const cpf = talent?.cpf ?? "[CPF]";
   const vinc = talent?.vinculo ?? "[Vínculo]";
-  return `${nome} (${vinc}): incluir bolsa de R$ ${brl(slot.valor)}, carga horária mensal de ${slot.ch}h e vigência de [mês/ano] a [mês/ano] ([nº] parcelas). CPF ${cpf}. Fonte ${slot.fonte}.`;
+  // Tentar extrair número de meses da string de vigência (ex: "12 meses")
+  const m = slot.vigencia.match(/(\d+)/);
+  let vigenciaStr = "[mês/ano] a [mês/ano] ([nº] parcelas)";
+  if (m) {
+    const months = Number(m[1]);
+    // calcular início como mês atual e fim como mês atual + months - 1
+    const now = new Date();
+    const startMonth = String(now.getMonth() + 1).padStart(2, "0");
+    const startYear = now.getFullYear();
+    const end = new Date(now.getFullYear(), now.getMonth() + months - 1, 1);
+    const endMonth = String(end.getMonth() + 1).padStart(2, "0");
+    const endYear = end.getFullYear();
+    vigenciaStr = `${startMonth}/${startYear} a ${endMonth}/${endYear} (${months} parcelas)`;
+  }
+  return `${nome} (${vinc}): incluir bolsa de R$ ${brl(slot.valor)}, carga horária mensal de ${slot.ch}h e vigência de ${vigenciaStr}. CPF ${cpf}. Fonte ${slot.fonte}.`;
 }
 function templateSubstituicao(slot: BolsaSlot, talent?: Talent): string {
   const nome = talent?.name ?? "[Nome do novo bolsista]";
   const vinc = talent?.vinculo ?? "[Vínculo]";
   const cpf = talent?.cpf ?? "[CPF]";
-  return `SUBSTITUIÇÃO da vaga atualmente ocupada por ${slot.ocupante!.nome}: realizar o distrato da bolsa atual (R$ ${brl(slot.valor)}, ${slot.ch}h/mês, fonte ${slot.fonte}) e incluir ${nome} (${vinc}), CPF ${cpf}, com bolsa de R$ ${brl(slot.valor)}, carga horária mensal de ${slot.ch}h e vigência de [mês/ano] a [mês/ano] ([nº] parcelas). Fonte ${slot.fonte}.`;
+  const m = slot.vigencia.match(/(\d+)/);
+  let vigenciaStr = "[mês/ano] a [mês/ano] ([nº] parcelas)";
+  if (m) {
+    const months = Number(m[1]);
+    const now = new Date();
+    const startMonth = String(now.getMonth() + 1).padStart(2, "0");
+    const startYear = now.getFullYear();
+    const end = new Date(now.getFullYear(), now.getMonth() + months - 1, 1);
+    const endMonth = String(end.getMonth() + 1).padStart(2, "0");
+    const endYear = end.getFullYear();
+    vigenciaStr = `${startMonth}/${startYear} a ${endMonth}/${endYear} (${months} parcelas)`;
+  }
+  return `SUBSTITUIÇÃO da vaga atualmente ocupada por ${slot.ocupante!.nome}: realizar o distrato da bolsa atual (R$ ${brl(slot.valor)}, ${slot.ch}h/mês, fonte ${slot.fonte}) e incluir ${nome} (${vinc}), CPF ${cpf}, com bolsa de R$ ${brl(slot.valor)}, carga horária mensal de ${slot.ch}h e vigência de ${vigenciaStr}. Fonte ${slot.fonte}.`;
 }
 function templateBlank(): string {
   return "[Nome do bolsista] ([Vínculo]): incluir bolsa de R$ [valor], carga horária mensal de [00]h e vigência de [mês/ano] a [mês/ano] ([nº] parcelas). CPF [000.000.000-00]. Fonte [FONTE].";
@@ -181,7 +210,7 @@ export function InclusionSection({
         <ActionButton
           icon={<FileEdit className="size-4" />}
           title="Linha em branco"
-          subtitle="Preenchimento manual"
+          subtitle="Template editável — preencha a descrição livremente"
           onClick={addBlank}
         />
         
@@ -480,6 +509,38 @@ function InclusionLineCard({
 }) {
   const [talentOpen, setTalentOpen] = useState(false);
 
+  function getInitials(name: string) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 0) return "";
+    const first = parts[0][0] ?? "";
+    const last = parts.length > 1 ? parts[parts.length - 1][0] ?? "" : (parts[0][1] ?? "");
+    return (first + last).toUpperCase();
+  }
+
+  function parseFormacao(formacao: string) {
+    const parts = formacao.split(" — ").map((s) => s.trim());
+    const institution = parts[1] ?? "";
+    const degreeAndCourse = parts[0] ?? formacao;
+    let degree = "";
+    let course = "";
+    const m = degreeAndCourse.match(/^(.*?) em (.*)$/i);
+    if (m) {
+      degree = m[1].trim();
+      course = m[2].trim();
+    } else {
+      const m2 = degreeAndCourse.match(/^(.*?)[\-–:]\s*(.*)$/);
+      if (m2) {
+        degree = m2[1].trim();
+        course = m2[2].trim();
+      } else {
+        degree = degreeAndCourse;
+      }
+    }
+    return { degree, course, institution };
+  }
+
+  
+
   const sourceMeta: Record<InclusionLine["source"], { label: string; cls: string }> = {
     "slot-vazio": { label: "Slot vazio", cls: "bg-emerald-600 text-white" },
     "slot-ocupado": { label: "Substituição", cls: "bg-amber-600 text-white" },
@@ -508,7 +569,7 @@ function InclusionLineCard({
             {meta.label}
           </span>
           {line.talent?.externo && (
-            <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-purple-600 text-white">
+            <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">
               Externo
             </span>
           )}
@@ -524,92 +585,119 @@ function InclusionLineCard({
       </div>
 
       <div className="p-3 space-y-3">
-        {/* Bolsista vinculado / busca no banco */}
-        {line.talent ? (
-          <div className="flex items-center gap-2 rounded-md bg-primary-soft border border-primary/20 px-3 py-2 text-xs">
-            <UserCircle2 className="size-4 text-primary shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{line.talent.name}</div>
-              <div className="text-[10px] text-muted-foreground truncate">
-                {line.talent.vinculo} · {line.talent.cpf} · {line.talent.formacao}
-              </div>
-            </div>
-            <button
-              onClick={onDetachTalent}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-            >
-              <X className="size-3" /> Remover
-            </button>
-          </div>
-        ) : (
-          <div>
-            <button
-              onClick={() => setTalentOpen((v) => !v)}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-            >
-              <Database className="size-3.5" />
-              {talentOpen ? "Fechar Banco de Talentos" : "Buscar no Banco de Talentos (opcional)"}
-            </button>
-            {talentOpen && (
-              <div className="mt-2">
-                <TalentInlineSearch
-                  onPick={(t) => {
-                    onAttachTalent(t);
-                    setTalentOpen(false);
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Texto editável principal */}
+        {/* Texto editável principal (mover para cima) */}
         <div>
           <label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground block mb-1">
             Descrição da inclusão
           </label>
-          <textarea
-            value={line.text}
-            onChange={(e) => onChangeText(e.target.value)}
-            rows={3}
-            className="w-full rounded-md border bg-background p-2.5 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring resize-y"
-          />
+          <HighlightedTextarea value={line.text} onChange={(v) => onChangeText(v)} rows={3} />
+        </div>
+
+        {/* Botão de buscar no banco de talentos (esconde quando já houver talento) */}
+        <div>
+          {!line.talent && (
+            <>
+              <button
+                onClick={() => setTalentOpen(true)}
+                className="w-full mt-2 text-left inline-flex items-start gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <div className="flex items-center justify-center size-10 rounded-md bg-primary/10 text-primary shrink-0">
+                  <Search className="size-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm">Buscar no Banco de Talentos</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Sugestão da IA ou busca manual</div>
+                </div>
+              </button>
+            </>
+          )}
+
+          {talentOpen && (
+            <TalentPickerModal
+              open={talentOpen}
+              onClose={() => setTalentOpen(false)}
+              roleTitle={line.slot?.funcao || line.novoSlot?.cargoFuncao || "Bolsista"}
+              onSelect={(t) => {
+                onAttachTalent(t);
+                setTalentOpen(false);
+              }}
+            />
+          )}
+
+          {/* Se houver talento anexado, mostrar cartão reduzido abaixo (sem o botão de busca) */}
+          {line.talent && (
+            <div className="mt-3 flex items-center gap-3 rounded-lg border-2 border-blue-400/40 bg-blue-50/40 px-4 py-3 text-sm">
+              <div className="flex items-center justify-center size-10 rounded-full bg-blue-100 text-blue-700 shrink-0 font-semibold">
+                {getInitials(line.talent.name)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium truncate">{line.talent.name}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {(() => {
+                    const p = parseFormacao(line.talent.formacao || "");
+                    const parts = [] as string[];
+                    if (p.degree) parts.push(p.degree);
+                    if (p.course && p.course !== p.degree) parts.push(p.course);
+                    if (p.institution) parts.push(p.institution);
+                    const edu = parts.join(" · ");
+                    return `${line.talent.vinculo}${edu ? ` · ${edu}` : ""} · ${line.talent.cpf}`;
+                  })()}
+                </div>
+              </div>
+              <button
+                onClick={onDetachTalent}
+                className="rounded-full p-1 text-muted-foreground hover:bg-muted/10 transition duration-150 ease-out transform hover:scale-105 motion-reduce:transform-none"
+                title="Remover"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Externo: linha única editável */}
         {line.externoText !== undefined && (
-          <div className="rounded-md border-2 border-purple-400/40 bg-purple-50/40 dark:bg-purple-950/20 p-3">
+          <div className="rounded-md border-2 border-blue-400/40 bg-blue-50/40 dark:bg-blue-950/20 p-3">
             <div className="flex items-center justify-between gap-2 mb-1.5">
-              <label className="text-[11px] uppercase tracking-wider font-bold text-purple-700 dark:text-purple-400">
+              <label className="text-[11px] uppercase tracking-wider font-bold text-blue-700 dark:text-blue-400">
                 Bolsista externo — justificativa para FUNAPE
               </label>
               {!line.talent?.externo && (
                 <button
                   onClick={onToggleExterno}
-                  className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                  className="rounded-full p-1 text-muted-foreground hover:bg-muted/10 transition duration-150 ease-out transform hover:scale-105 motion-reduce:transform-none"
+                  title="Remover"
                 >
-                  <X className="size-3" /> remover
+                  <X className="size-4" />
                 </button>
               )}
             </div>
-            <textarea
-              value={line.externoText}
-              onChange={(e) => onChangeExterno(e.target.value)}
+            <HighlightedTextarea
+              value={line.externoText || ""}
+              onChange={(v) => onChangeExterno(v)}
               rows={2}
               placeholder="Nome — Formação acadêmica. Qualificação relacionada às atividades do projeto."
-              className="w-full rounded-md border bg-background p-2 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+              highlightClass="px-1 rounded bg-blue-100 text-blue-800"
             />
           </div>
         )}
 
-        {/* Toggle externo manual (linhas em branco / slot existente sem talento externo) */}
+        {/* Toggle externo manual como botão em largura total com descrição */}
         {line.externoText === undefined && !line.talent?.externo && (
-          <button
-            onClick={onToggleExterno}
-            className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-          >
-            <Plus className="size-3" /> Marcar como bolsista externo
-          </button>
+          <div>
+            <button
+              onClick={onToggleExterno}
+              className="w-full mt-1 text-left inline-flex items-start gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+                <div className="flex items-center justify-center size-10 rounded-md bg-primary/10 text-primary shrink-0">
+                  <UserCheck className="size-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-sm">Marcar como bolsista externo</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Adicione o bloco de justificativa exigido pela FUNAPE</div>
+              </div>
+            </button>
+          </div>
         )}
 
         {/* Atividades */}
@@ -684,7 +772,7 @@ function TalentInlineSearch({ onPick }: { onPick: (t: Talent) => void }) {
               <div className="text-xs font-medium truncate flex items-center gap-1.5">
                 {t.name}
                 {t.externo && (
-                  <span className="text-[9px] uppercase font-bold px-1 py-0.5 rounded bg-purple-600 text-white">
+                  <span className="text-[9px] uppercase font-bold px-1 py-0.5 rounded bg-blue-600 text-white">
                     Externo
                   </span>
                 )}

@@ -11,20 +11,22 @@ type Talent = {
   email: string;
   /** True quando o bolsista não tem vínculo com a instituição. */
   externo?: boolean;
+  /** Carga horária disponível/exercida (ex: "20h", "40h") */
+  cargaHoraria?: string;
 };
 
 export const TALENTS: Talent[] = [
-  { id: "t1", name: "João da Silva", cpf: "111.111.111-11", vinculo: "Discente", formacao: "Mestrando em Engenharia de Software — UFG", email: "joao.silva@discente.ufg.br" },
-  { id: "t2", name: "Maria Rezende", cpf: "222.222.222-22", vinculo: "Docente", formacao: "Doutora em Ciência da Computação — UFG", email: "maria.rezende@ufg.br" },
-  { id: "t3", name: "Luiz Miguel Costa", cpf: "333.333.333-33", vinculo: "Discente", formacao: "Graduando em Engenharia de Computação — UFG", email: "luiz.miguel@discente.ufg.br" },
-  { id: "t4", name: "Ana Paula Souza", cpf: "444.444.444-44", vinculo: "Técnico", formacao: "Especialista em Gestão de Projetos — UFG", email: "ana.souza@ufg.br" },
-  { id: "t5", name: "Carlos Henrique Lima", cpf: "555.555.555-55", vinculo: "Externo", formacao: "Mestre em IA — PUC-GO", email: "carlos.lima@externo.com", externo: true },
-  { id: "t6", name: "Renata Oliveira", cpf: "666.666.666-66", vinculo: "Docente", formacao: "Doutora em Engenharia Elétrica — UFG", email: "renata.oliveira@ufg.br" },
-  { id: "t7", name: "Bruno Albuquerque", cpf: "777.777.777-77", vinculo: "Externo", formacao: "Doutor em Visão Computacional — USP", email: "bruno.alb@externo.com", externo: true },
-  { id: "t8", name: "Fernanda Tavares", cpf: "888.888.888-88", vinculo: "Discente", formacao: "Doutoranda em IA — UFG", email: "fernanda.tavares@discente.ufg.br" },
-  { id: "t9", name: "Patrícia Mendonça (Externa)", cpf: "999.111.222-33", vinculo: "Externo", formacao: "Doutora em Aprendizado de Máquina — UnB", email: "patricia.mendonca@externo.com", externo: true },
-  { id: "t10", name: "Felipinho Fernandes (Externo)", cpf: "321.654.987-00", vinculo: "Externo", formacao: "Mestre em Engenharia da Computação — UTFPR", email: "felipinho.fernandes@externo.com", externo: true },
-  { id: "t11", name: "Thiago Neto (Externo)", cpf: "456.789.123-00", vinculo: "Externo", formacao: "Doutor em Ciência da Computação — UFMG", email: "thiago.neto@externo.com", externo: true },
+  { id: "t1", name: "João da Silva", cpf: "111.111.111-11", vinculo: "Discente", formacao: "Mestrando em Engenharia de Software — UFG", email: "joao.silva@discente.ufg.br", cargaHoraria: "20h" },
+  { id: "t2", name: "Maria Rezende", cpf: "222.222.222-22", vinculo: "Docente", formacao: "Doutora em Ciência da Computação — UFG", email: "maria.rezende@ufg.br", cargaHoraria: "40h" },
+  { id: "t3", name: "Luiz Miguel Costa", cpf: "333.333.333-33", vinculo: "Discente", formacao: "Graduando em Engenharia de Computação — UFG", email: "luiz.miguel@discente.ufg.br", cargaHoraria: "20h" },
+  { id: "t4", name: "Ana Paula Souza", cpf: "444.444.444-44", vinculo: "Técnico", formacao: "Especialista em Gestão de Projetos — UFG", email: "ana.souza@ufg.br", cargaHoraria: "30h" },
+  { id: "t5", name: "Carlos Henrique Lima", cpf: "555.555.555-55", vinculo: "Externo", formacao: "Mestre em IA — PUC-GO", email: "carlos.lima@externo.com", externo: true, cargaHoraria: "10h" },
+  { id: "t6", name: "Renata Oliveira", cpf: "666.666.666-66", vinculo: "Docente", formacao: "Doutora em Engenharia Elétrica — UFG", email: "renata.oliveira@ufg.br", cargaHoraria: "40h" },
+  { id: "t7", name: "Bruno Albuquerque", cpf: "777.777.777-77", vinculo: "Externo", formacao: "Doutor em Visão Computacional — USP", email: "bruno.alb@externo.com", externo: true, cargaHoraria: "12h" },
+  { id: "t8", name: "Fernanda Tavares", cpf: "888.888.888-88", vinculo: "Discente", formacao: "Doutoranda em IA — UFG", email: "fernanda.tavares@discente.ufg.br", cargaHoraria: "20h" },
+  { id: "t9", name: "Patrícia Mendonça (Externa)", cpf: "999.111.222-33", vinculo: "Externo", formacao: "Doutora em Aprendizado de Máquina — UnB", email: "patricia.mendonca@externo.com", externo: true, cargaHoraria: "8h" },
+  { id: "t10", name: "Felipinho Fernandes (Externo)", cpf: "321.654.987-00", vinculo: "Externo", formacao: "Mestre em Engenharia da Computação — UTFPR", email: "felipinho.fernandes@externo.com", externo: true, cargaHoraria: "15h" },
+  { id: "t11", name: "Thiago Neto (Externo)", cpf: "456.789.123-00", vinculo: "Externo", formacao: "Doutor em Ciência da Computação — UFMG", email: "thiago.neto@externo.com", externo: true, cargaHoraria: "20h" },
 ];
 
 export function TalentSearch({ onPick }: { onPick: (talent: Talent) => void }) {
@@ -112,12 +114,13 @@ export function TalentSearch({ onPick }: { onPick: (talent: Talent) => void }) {
           {picked.map((p) => (
             <span
               key={p.id}
-              className="inline-flex items-center gap-1.5 text-xs bg-primary-soft text-primary border border-primary/20 rounded-full pl-2 pr-1 py-1 font-medium"
+              className="inline-flex items-center gap-2 text-xs bg-primary-soft text-primary border border-primary/20 rounded-full pl-2 pr-1 py-1 font-medium"
             >
               {p.name}
               <button
                 onClick={() => setPicked((prev) => prev.filter((x) => x.id !== p.id))}
-                className="rounded-full hover:bg-primary/20 p-0.5"
+                className="rounded-full p-0.5 text-muted-foreground hover:bg-muted/10 transition duration-150 ease-out transform hover:scale-105 motion-reduce:transform-none"
+                title="Remover"
               >
                 <X className="size-3" />
               </button>
