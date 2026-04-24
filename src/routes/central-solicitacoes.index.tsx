@@ -42,11 +42,11 @@ const OPTIONS: Option[] = [
     enabled: true,
   },
   {
-    to: "/central-solicitacoes/ajuste-ptr",
+    to: "/central-solicitacoes/compras-pagamentos",
     title: "Compras & Pagamentos",
     description: "Gerencie compras e pagamentos do projeto",
     icon: <DollarSign className="size-5" />,
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/central-solicitacoes/ajuste-ptr",
