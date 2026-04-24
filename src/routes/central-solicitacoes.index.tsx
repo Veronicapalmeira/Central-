@@ -35,11 +35,11 @@ const OPTIONS: Option[] = [
     enabled: true,
   },
   {
-    to: "/central-solicitacoes/ajuste-ptr",
+    to: "/central-solicitacoes/passagens-diarias",
     title: "Passagens e Diárias",
     description: "Solicite passagens e diárias para deslocamentos",
     icon: <Plane className="size-5" />,
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/central-solicitacoes/ajuste-ptr",
