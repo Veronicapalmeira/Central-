@@ -28,11 +28,11 @@ const OPTIONS: Option[] = [
     enabled: true,
   },
   {
-    to: "/central-solicitacoes/ajuste-ptr",
+    to: "/central-solicitacoes/cadastro-macroentregas",
     title: "Cadastro de Macroentregas",
     description: "Registre novas macroentregas do projeto",
     icon: <Target className="size-5" />,
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/central-solicitacoes/ajuste-ptr",

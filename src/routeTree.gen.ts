@@ -13,6 +13,7 @@ import { Route as CentralSolicitacoesRouteImport } from './routes/central-solici
 import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CentralSolicitacoesIndexRouteImport } from './routes/central-solicitacoes.index'
+import { Route as CentralSolicitacoesCadastroMacroentregasRouteImport } from './routes/central-solicitacoes.cadastro-macroentregas'
 import { Route as CentralSolicitacoesAjustePtrRouteImport } from './routes/central-solicitacoes.ajuste-ptr'
 
 const CentralSolicitacoesRoute = CentralSolicitacoesRouteImport.update({
@@ -36,6 +37,12 @@ const CentralSolicitacoesIndexRoute =
     path: '/',
     getParentRoute: () => CentralSolicitacoesRoute,
   } as any)
+const CentralSolicitacoesCadastroMacroentregasRoute =
+  CentralSolicitacoesCadastroMacroentregasRouteImport.update({
+    id: '/cadastro-macroentregas',
+    path: '/cadastro-macroentregas',
+    getParentRoute: () => CentralSolicitacoesRoute,
+  } as any)
 const CentralSolicitacoesAjustePtrRoute =
   CentralSolicitacoesAjustePtrRouteImport.update({
     id: '/ajuste-ptr',
@@ -48,12 +55,14 @@ export interface FileRoutesByFullPath {
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes': typeof CentralSolicitacoesRouteWithChildren
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
+  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes/': typeof CentralSolicitacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
+  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes': typeof CentralSolicitacoesIndexRoute
 }
 export interface FileRoutesById {
@@ -62,6 +71,7 @@ export interface FileRoutesById {
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes': typeof CentralSolicitacoesRouteWithChildren
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
+  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes/': typeof CentralSolicitacoesIndexRoute
 }
 export interface FileRouteTypes {
@@ -71,12 +81,14 @@ export interface FileRouteTypes {
     | '/ajuda'
     | '/central-solicitacoes'
     | '/central-solicitacoes/ajuste-ptr'
+    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/ajuda'
     | '/central-solicitacoes/ajuste-ptr'
+    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes'
   id:
     | '__root__'
@@ -84,6 +96,7 @@ export interface FileRouteTypes {
     | '/ajuda'
     | '/central-solicitacoes'
     | '/central-solicitacoes/ajuste-ptr'
+    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes/'
   fileRoutesById: FileRoutesById
 }
@@ -123,6 +136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralSolicitacoesIndexRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
     }
+    '/central-solicitacoes/cadastro-macroentregas': {
+      id: '/central-solicitacoes/cadastro-macroentregas'
+      path: '/cadastro-macroentregas'
+      fullPath: '/central-solicitacoes/cadastro-macroentregas'
+      preLoaderRoute: typeof CentralSolicitacoesCadastroMacroentregasRouteImport
+      parentRoute: typeof CentralSolicitacoesRoute
+    }
     '/central-solicitacoes/ajuste-ptr': {
       id: '/central-solicitacoes/ajuste-ptr'
       path: '/ajuste-ptr'
@@ -135,11 +155,14 @@ declare module '@tanstack/react-router' {
 
 interface CentralSolicitacoesRouteChildren {
   CentralSolicitacoesAjustePtrRoute: typeof CentralSolicitacoesAjustePtrRoute
+  CentralSolicitacoesCadastroMacroentregasRoute: typeof CentralSolicitacoesCadastroMacroentregasRoute
   CentralSolicitacoesIndexRoute: typeof CentralSolicitacoesIndexRoute
 }
 
 const CentralSolicitacoesRouteChildren: CentralSolicitacoesRouteChildren = {
   CentralSolicitacoesAjustePtrRoute: CentralSolicitacoesAjustePtrRoute,
+  CentralSolicitacoesCadastroMacroentregasRoute:
+    CentralSolicitacoesCadastroMacroentregasRoute,
   CentralSolicitacoesIndexRoute: CentralSolicitacoesIndexRoute,
 }
 

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { PROJECTS, MOCK_REQUESTS, STATUS_LABEL, type Project, type AdjustmentRequest, type RequestStatus } from "@/lib/ptr-data";
 import { Search, Calendar, User2, ArrowRight, Plus, History, FileSignature, ChevronLeft, AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
@@ -39,6 +39,9 @@ function SolicitacoesPTRPage() {
 
   return (
     <div className="p-6 md:p-10 max-w-6xl mx-auto">
+      <Link to="/central-solicitacoes" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
+        <ChevronLeft className="size-4" /> Voltar para central de solicitações
+      </Link>
       <div className="mb-8">
         <div className="text-xs uppercase tracking-wider text-primary font-semibold">Central de Solicitações</div>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Solicitações de Ajuste de PTR</h1>
