@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Send, Calendar, Plane, Info, Plus, History, ChevronLeft, User2, MapPin, Clock, Settings, Briefcase } from "lucide-react";
-import { TalentSearch, type Talent } from "@/components/ptr/TalentSearch";
+import { Send, Calendar, Plane, Info, Plus, History, ChevronLeft, User2, MapPin, Clock, Settings, Briefcase, Search } from "lucide-react";
+import { type Talent } from "@/components/ptr/TalentSearch";
+import TalentPickerModal from "@/components/ptr/TalentPickerModal";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { PROJECTS } from "@/lib/ptr-data";
@@ -61,6 +62,7 @@ function PassagensDiariasPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [sent, setSent] = useState(false);
   const [saved, setSaved] = useState<any | null>(null);
+  const [talentOpen, setTalentOpen] = useState(false);
 
   function formatDateDDMMYYYY(v: string) {
     const digits = v.replace(/\D/g, "").slice(0, 8);
@@ -203,16 +205,6 @@ function PassagensDiariasPage() {
                       </select>
                     </label>
                     <div className="border-t mt-4 mb-4" />
-                    <div className="mb-3">
-                      <TalentSearch onPick={(t: Talent) => {
-                        setPassengerName(t.name || "");
-                        setPassengerEmail(t.email || "");
-                        setPassengerRG(t.rg || "");
-                        setPassengerCPF(t.cpf || "");
-                        if (t.dob) setPassengerDOB(t.dob);
-                        if (t.phone) setPassengerPhone(t.phone);
-                      }} />
-                    </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <label className="mb-3">
                         <div className="text-sm font-medium">Nome do passageiro <span className="text-red-500 ml-1">*</span></div>
@@ -243,10 +235,43 @@ function PassagensDiariasPage() {
                     </div>
 
                     <div className="grid gap-4">
+
                       <label className="mb-3">
                         <div className="text-sm font-medium">Telefone de contato <span className="text-red-500 ml-1">*</span></div>
                         <input value={passengerPhone} onChange={(e) => setPassengerPhone(e.target.value)} placeholder="Telefone" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" required />
                       </label>
+
+                      <div className="mb-3">
+                        <button
+                          onClick={() => setTalentOpen(true)}
+                          className="w-full mt-2 text-left inline-flex items-start gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <div className="flex items-center justify-center size-10 rounded-md bg-primary/10 text-primary shrink-0">
+                            <Search className="size-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-sm">Buscar Colaborador</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">buscar colaborador manualmente e os dados nome, e-mail, RG, CPF, data de nascimento e telefone serão preenchidos automaticamente</div>
+                          </div>
+                        </button>
+
+                        {talentOpen && (
+                          <TalentPickerModal
+                            open={talentOpen}
+                            onClose={() => setTalentOpen(false)}
+                            roleTitle="Passageiro"
+                            onlyManual
+                            onSelect={(t: Talent) => {
+                              setPassengerName(t.name || "");
+                              setPassengerEmail(t.email || "");
+                              setPassengerRG((t as any).rg || "");
+                              setPassengerCPF((t as any).cpf || "");
+                              if ((t as any).dob) setPassengerDOB((t as any).dob);
+                              if ((t as any).phone) setPassengerPhone((t as any).phone);
+                            }}
+                          />
+                        )}
+                      </div>
 
                       <div className="border-t mt-3 mb-3" />
 
@@ -323,9 +348,9 @@ function PassagensDiariasPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Incluir adicional de deslocamento? <span className="text-red-500 ml-1">*</span></div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="desloc" checked={includeDesloc === true} onChange={() => setIncludeDesloc(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="desloc" checked={includeDesloc === false} onChange={() => setIncludeDesloc(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={includeDesloc === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeDesloc(true)}>Sim</button>
+                        <button type="button" className={includeDesloc === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeDesloc(false)}>Não</button>
                       </div>
                     </label>
                   </div>
@@ -353,19 +378,19 @@ function PassagensDiariasPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Sua viagem é internacional?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="intl" checked={international === true} onChange={() => setInternational(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="intl" checked={international === false} onChange={() => setInternational(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={international === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setInternational(true)}>Sim</button>
+                        <button type="button" className={international === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setInternational(false)}>Não</button>
                       </div>
                     </label>
 
                     {international === true && (
                       <div className="mt-4 space-y-4">
-                        <div>
+                          <div>
                           <div className="text-sm font-medium">Irá precisar de seguro viagem?</div>
-                          <div className="mt-2 inline-flex items-center gap-4">
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="seguro" checked={travelInsurance === true} onChange={() => setTravelInsurance(true)} /> Sim</label>
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="seguro" checked={travelInsurance === false} onChange={() => setTravelInsurance(false)} /> Não</label>
+                          <div className="mt-2 grid grid-cols-2 gap-3">
+                            <button type="button" className={travelInsurance === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setTravelInsurance(true)}>Sim</button>
+                            <button type="button" className={travelInsurance === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setTravelInsurance(false)}>Não</button>
                           </div>
                         </div>
 
@@ -444,9 +469,9 @@ function PassagensDiariasPage() {
                                         <label className="mb-3">
                                           <div className="text-sm font-medium">Incluir franquia de bagagem?</div>
                                           <div className="mt-2 text-xs text-muted-foreground">Após a compra da passagem não é mais possível incluir bagagens pagas com recurso do projeto, apenas com recurso próprio do passageiro.</div>
-                                          <div className="mt-2 inline-flex items-center gap-4">
-                                            <label className="inline-flex items-center gap-2"><input type="radio" name="bagagem" checked={includeBaggage} onChange={() => setIncludeBaggage(true)} /> Sim</label>
-                                            <label className="inline-flex items-center gap-2"><input type="radio" name="bagagem" checked={!includeBaggage} onChange={() => setIncludeBaggage(false)} /> Não</label>
+                                          <div className="mt-2 grid grid-cols-2 gap-3">
+                                            <button type="button" className={includeBaggage === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeBaggage(true)}>Sim</button>
+                                            <button type="button" className={includeBaggage === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeBaggage(false)}>Não</button>
                                           </div>
                                         </label>
                                       </>
@@ -472,9 +497,9 @@ function PassagensDiariasPage() {
                         <label>
                           <div className="text-sm font-medium">Incluir franquia de bagagem?</div>
                           <div className="mt-2 text-xs text-muted-foreground">Após a compra da passagem não é mais possível incluir bagagens pagas com recurso do projeto, apenas com recurso próprio do passageiro.</div>
-                          <div className="mt-2 inline-flex items-center gap-4">
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="bagagem" checked={includeBaggage} onChange={() => setIncludeBaggage(true)} /> Sim</label>
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="bagagem" checked={includeBaggage === false} onChange={() => setIncludeBaggage(false)} /> Não</label>
+                          <div className="mt-2 grid grid-cols-2 gap-3">
+                            <button type="button" className={includeBaggage === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeBaggage(true)}>Sim</button>
+                            <button type="button" className={includeBaggage === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setIncludeBaggage(false)}>Não</button>
                           </div>
                         </label>
                       </>
@@ -487,9 +512,9 @@ function PassagensDiariasPage() {
                   <div className="grid gap-3">
                     <label>
                       <div className="text-sm font-medium">Possui restrição de Voo?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="restricao" checked={flightRestriction === true} onChange={() => setFlightRestriction(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="restricao" checked={flightRestriction === false} onChange={() => setFlightRestriction(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={flightRestriction === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setFlightRestriction(true)}>Sim</button>
+                        <button type="button" className={flightRestriction === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setFlightRestriction(false)}>Não</button>
                       </div>
                     </label>
 
@@ -502,9 +527,9 @@ function PassagensDiariasPage() {
 
                           <label className="mb-3">
                           <div className="text-sm font-medium">Possui preferência de voo?</div>
-                          <div className="mt-2 inline-flex items-center gap-4">
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="pref" checked={flightPreference === true} onChange={() => setFlightPreference(true)} /> Sim</label>
-                            <label className="inline-flex items-center gap-2"><input type="radio" name="pref" checked={flightPreference === false} onChange={() => setFlightPreference(false)} /> Não</label>
+                          <div className="mt-2 grid grid-cols-2 gap-3">
+                            <button type="button" className={flightPreference === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setFlightPreference(true)}>Sim</button>
+                            <button type="button" className={flightPreference === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setFlightPreference(false)}>Não</button>
                           </div>
                           <div className="text-xs text-muted-foreground mt-2">Se tiver preferência, deverá adicionar sugestão de voos.</div>
                         </label>

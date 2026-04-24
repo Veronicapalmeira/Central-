@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Send, Plus, History, ChevronLeft, Calendar, Info, User2, Briefcase } from "lucide-react";
+import { Send, Plus, History, ChevronLeft, Calendar, Info, User2, Briefcase, ShoppingCart, CreditCard, BookOpen, DollarSign, FileText, Search } from "lucide-react";
 import { PROJECTS } from "@/lib/ptr-data";
 import { cn } from "@/lib/utils";
-import { TalentSearch, TALENTS } from "@/components/ptr/TalentSearch";
+import { TALENTS } from "@/components/ptr/TalentSearch";
+import TalentPickerModal from "@/components/ptr/TalentPickerModal";
 
 export const Route = createFileRoute("/central-solicitacoes/compras-pagamentos")({
   head: () => ({
@@ -65,6 +66,7 @@ function ComprasPagamentosPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [saved, setSaved] = useState<any | null>(null);
   const [sent, setSent] = useState(false);
+  const [talentOpen, setTalentOpen] = useState(false);
 
   function fillWithCurrentUser() {
     const me = TALENTS && TALENTS.length > 0 ? TALENTS[0] : null;
@@ -74,6 +76,14 @@ function ComprasPagamentosPage() {
     setOtherDOB(me.dob || "");
     setOtherPhone(me.phone || "");
   }
+
+  const REQUEST_TYPE_META: Record<string, { label: string; icon: any }> = {
+    compra_material_servico: { label: "Compra de material/serviço", icon: ShoppingCart },
+    pagamento_material_servico: { label: "Pagamento de material/serviço", icon: CreditCard },
+    inscricao_publicacao: { label: "Inscrição / Publicação", icon: BookOpen },
+    ressarcimento_despesa: { label: "Ressarcimento de despesa", icon: DollarSign },
+    outros: { label: "Outros", icon: Info },
+  };
 
   function clear() {
     setRequestingForOther(null);
@@ -204,20 +214,14 @@ function ComprasPagamentosPage() {
                 <div className="grid gap-3">
                   <label className="mb-3">
                     <div className="text-sm font-medium">Está solicitando para outra pessoa?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === true} onChange={() => { setRequestingForOther(true); setOtherName(""); setOtherEmail(""); setOtherDOB(""); setOtherPhone(""); }} /> Sim</label>
-                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === false} onChange={() => { setRequestingForOther(false); fillWithCurrentUser(); }} /> Não</label>
-                    </div>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                          <button type="button" className={requestingForOther === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => { setRequestingForOther(true); setOtherName(""); setOtherEmail(""); setOtherDOB(""); setOtherPhone(""); }}>Sim</button>
+                        <button type="button" className={requestingForOther === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => { setRequestingForOther(false); fillWithCurrentUser(); }}>Não</button>
+                      </div>
                   </label>
 
                   {requestingForOther === true && (
                     <>
-                      <TalentSearch onPick={(t: any) => {
-                        setOtherName(t.name || "");
-                        setOtherEmail(t.email || "");
-                        setOtherDOB(t.dob || "");
-                        setOtherPhone(t.phone || "");
-                      }} />
                       <label className="mb-3">
                         <div className="text-sm font-medium">Nome completo da pessoa para a qual está solicitando</div>
                         <input value={otherName} onChange={(e) => setOtherName(e.target.value)} placeholder="Insira o valor aqui" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" />
@@ -240,6 +244,35 @@ function ComprasPagamentosPage() {
                         <div className="text-sm font-medium">Número de telefone</div>
                         <input value={otherPhone} onChange={(e) => setOtherPhone(e.target.value)} placeholder="Inserir um número" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" />
                       </label>
+                      <div className="mb-3">
+                        <button
+                          onClick={() => setTalentOpen(true)}
+                          className="w-full mt-2 text-left inline-flex items-start gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <div className="flex items-center justify-center size-10 rounded-md bg-primary/10 text-primary shrink-0">
+                            <Search className="size-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-sm">Buscar Colaborador</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">buscar colaborador manualmente e os dados nome, e-mail, data de nascimento e telefone serão preenchidos automaticamente</div>
+                          </div>
+                        </button>
+
+                        {talentOpen && (
+                          <TalentPickerModal
+                            open={talentOpen}
+                            onClose={() => setTalentOpen(false)}
+                            roleTitle="Solicitante"
+                            onlyManual
+                            onSelect={(t: any) => {
+                              setOtherName(t.name || "");
+                              setOtherEmail(t.email || "");
+                              setOtherDOB(t.dob || "");
+                              setOtherPhone(t.phone || "");
+                            }}
+                          />
+                        )}
+                      </div>
                     </>
                   )}
                   {requestingForOther === false && (
@@ -256,6 +289,8 @@ function ComprasPagamentosPage() {
                         <div className="text-sm font-medium">Número de telefone</div>
                         <input value={otherPhone} onChange={(e) => setOtherPhone(e.target.value)} placeholder="Inserir um número" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" />
                       </label>
+
+                      
                     </>
                   )}
                 </div>
@@ -289,7 +324,7 @@ function ComprasPagamentosPage() {
               {/* Campos para Inscrição / Publicação */}
               {requestType === "inscricao_publicacao" && (
                 <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
-                  <div className="text-sm font-semibold mb-2 pb-2">Inscrição / Publicação</div>
+                  <div className="flex items-center gap-3 text-sm font-semibold mb-2 pb-2 text-foreground leading-tight"><BookOpen className="size-4 text-primary" /> <span>{REQUEST_TYPE_META['inscricao_publicacao'].label}</span></div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">CPF</div>
@@ -326,9 +361,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">A inscrição já foi feita?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="regdone" checked={registrationDone === true} onChange={() => setRegistrationDone(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="regdone" checked={registrationDone === false} onChange={() => setRegistrationDone(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={registrationDone === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setRegistrationDone(true)}>Sim</button>
+                        <button type="button" className={registrationDone === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setRegistrationDone(false)}>Não</button>
                       </div>
                     </label>
                   </div>
@@ -338,7 +373,7 @@ function ComprasPagamentosPage() {
               {/* Campos para Ressarcimento de despesa */}
               {requestType === "ressarcimento_despesa" && (
                 <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
-                  <div className="text-sm font-semibold mb-2 pb-2">Ressarcimento de despesa</div>
+                  <div className="flex items-center gap-3 text-sm font-semibold mb-2 pb-2 text-foreground leading-tight"><DollarSign className="size-4 text-primary" /> <span>{REQUEST_TYPE_META['ressarcimento_despesa'].label}</span></div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">CPF do solicitante</div>
@@ -383,9 +418,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">O valor do(a) pagamento/reembolso/compra é maior que R$800,00?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800ress" checked={over800 === true} onChange={() => setOver800(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800ress" checked={over800 === false} onChange={() => setOver800(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={over800 === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setOver800(true)}>Sim</button>
+                        <button type="button" className={over800 === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setOver800(false)}>Não</button>
                       </div>
                       <div className="text-xs text-muted-foreground mt-2">Se o valor for superior a R$ 800,00, será necessário apresentar 3 orçamentos. Se a compra for menor que R$ 800,00 o pedido será enviado à equipe administrativa do CEIA.</div>
                     </label>
@@ -397,9 +432,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Possui documentos para anexar?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachRess" checked={hasAttachments === true} onChange={() => setHasAttachments(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachRess" checked={hasAttachments === false} onChange={() => setHasAttachments(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={hasAttachments === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setHasAttachments(true)}>Sim</button>
+                        <button type="button" className={hasAttachments === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-gray-100 text-black hover:bg-gray-200 hover:border-gray-200 transition-colors duration-150"} onClick={() => setHasAttachments(false)}>Não</button>
                       </div>
                     </label>
 
@@ -417,7 +452,7 @@ function ComprasPagamentosPage() {
               {/* Campos para Pagamento de material/serviço */}
               {requestType === "pagamento_material_servico" && (
                 <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
-                  <div className="text-sm font-semibold mb-2 pb-2">Pagamento de material/serviço</div>
+                  <div className="flex items-center gap-3 text-sm font-semibold mb-2 pb-2 text-foreground leading-tight"><CreditCard className="size-4 text-primary" /> <span>{REQUEST_TYPE_META['pagamento_material_servico'].label}</span></div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Nome da empresa</div>
@@ -452,9 +487,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">O valor do(a) pagamento/reembolso/compra é maior que R$800,00?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800pay" checked={over800 === true} onChange={() => setOver800(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800pay" checked={over800 === false} onChange={() => setOver800(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={over800 === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/20 transition-colors duration-150"} onClick={() => setOver800(true)}>Sim</button>
+                        <button type="button" className={over800 === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/20 transition-colors duration-150"} onClick={() => setOver800(false)}>Não</button>
                       </div>
                       <div className="text-xs text-muted-foreground mt-2">Se o valor for superior a R$ 800,00, será necessário apresentar 3 orçamentos. Se a compra for menor que R$ 800,00 o pedido será enviado à equipe administrativa do CEIA.</div>
                     </label>
@@ -466,9 +501,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Possui documentos para anexar?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachPay" checked={hasAttachments === true} onChange={() => setHasAttachments(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachPay" checked={hasAttachments === false} onChange={() => setHasAttachments(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={hasAttachments === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/20 transition-colors duration-150"} onClick={() => setHasAttachments(true)}>Sim</button>
+                        <button type="button" className={hasAttachments === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/20 transition-colors duration-150"} onClick={() => setHasAttachments(false)}>Não</button>
                       </div>
                     </label>
 
@@ -486,7 +521,7 @@ function ComprasPagamentosPage() {
               {/* Campos para Outros */}
               {requestType === "outros" && (
                 <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
-                  <div className="text-sm font-semibold mb-2 pb-2">Outros</div>
+                  <div className="flex items-center gap-3 text-sm font-semibold mb-2 pb-2 text-foreground leading-tight"><Info className="size-4 text-primary" /> <span>{REQUEST_TYPE_META['outros'].label}</span></div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Descrição detalhada da solicitação</div>
@@ -495,9 +530,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">O valor do(a) pagamento/reembolso/compra é maior que R$800,00?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800out" checked={over800 === true} onChange={() => setOver800(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800out" checked={over800 === false} onChange={() => setOver800(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={over800 === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground hover:bg-primary/5 hover:border-primary/20 transition-colors duration-150"} onClick={() => setOver800(true)}>Sim</button>
+                        <button type="button" className={over800 === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground hover:bg-primary/5 hover:border-primary/20 transition-colors duration-150"} onClick={() => setOver800(false)}>Não</button>
                       </div>
                       <div className="text-xs text-muted-foreground mt-2">Se o valor for superior a R$ 800,00, será necessário apresentar 3 orçamentos. Se a compra for menor que R$ 800,00 o pedido será enviado à equipe administrativa do CEIA.</div>
                     </label>
@@ -509,9 +544,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Possui documentos para anexar?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachOut" checked={hasAttachments === true} onChange={() => setHasAttachments(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttachOut" checked={hasAttachments === false} onChange={() => setHasAttachments(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={hasAttachments === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground hover:bg-primary/5 hover:border-primary/20 transition-colors duration-150"} onClick={() => setHasAttachments(true)}>Sim</button>
+                        <button type="button" className={hasAttachments === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground border-transparent transition-colors duration-150 hover:opacity-95" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground hover:bg-primary/5 hover:border-primary/20 transition-colors duration-150"} onClick={() => setHasAttachments(false)}>Não</button>
                       </div>
                     </label>
 
@@ -529,7 +564,7 @@ function ComprasPagamentosPage() {
               {/* Detalhamento específico para Compra de material/serviço */}
               {requestType === "compra_material_servico" && (
                 <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2 pb-2">Detalhamento da Compra</div>
+                  <div className="flex items-center gap-3 text-sm font-semibold mb-2 pb-2 text-foreground leading-tight"><ShoppingCart className="size-4 text-primary" /> <span>{REQUEST_TYPE_META['compra_material_servico'].label}</span></div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Descreva o(s) item(ns), a(s) quantidade(s). Caso haja alguma observação importante, inclua também.</div>
@@ -556,9 +591,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">O valor do(a) pagamento/reembolso/compra é maior que R$800,00?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800" checked={over800 === true} onChange={() => setOver800(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="over800" checked={over800 === false} onChange={() => setOver800(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={over800 === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground"} onClick={() => setOver800(true)}>Sim</button>
+                        <button type="button" className={over800 === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground"} onClick={() => setOver800(false)}>Não</button>
                       </div>
                       <div className="text-xs text-muted-foreground mt-2">Se o valor for superior a R$ 800,00, será necessário apresentar 3 orçamentos. Se a compra for menor que R$ 800,00 o pedido será enviado à equipe administrativa do CEIA.</div>
                     </label>
@@ -570,9 +605,9 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Possui documentos para anexar?</div>
-                      <div className="mt-2 inline-flex items-center gap-4">
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttach" checked={hasAttachments === true} onChange={() => setHasAttachments(true)} /> Sim</label>
-                        <label className="inline-flex items-center gap-2"><input type="radio" name="hasAttach" checked={hasAttachments === false} onChange={() => setHasAttachments(false)} /> Não</label>
+                      <div className="mt-2 grid grid-cols-2 gap-3">
+                        <button type="button" className={hasAttachments === true ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground"} onClick={() => setHasAttachments(true)}>Sim</button>
+                        <button type="button" className={hasAttachments === false ? "w-full rounded-lg border px-3 py-2 bg-primary text-primary-foreground" : "w-full rounded-lg border px-3 py-2 bg-white text-foreground"} onClick={() => setHasAttachments(false)}>Não</button>
                       </div>
                     </label>
 

@@ -9,13 +9,15 @@ export function TalentPickerModal({
   onClose,
   onSelect,
   roleTitle,
+  onlyManual,
 }: {
   open: boolean;
   onClose: () => void;
   onSelect: (t: Talent) => void;
   roleTitle?: string;
+  onlyManual?: boolean;
 }) {
-  const [tab, setTab] = useState<"ai" | "manual">("ai");
+  const [tab, setTab] = useState<"ai" | "manual">(onlyManual ? "manual" : "ai");
   // AI suggestions
   const [aiPage, setAiPage] = useState(1);
   const [aiList, setAiList] = useState<CandidateSuggestion[]>([]);
@@ -24,6 +26,7 @@ export function TalentPickerModal({
   // Manual search
   const [q, setQ] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
+  const [cpfQuery, setCpfQuery] = useState("");
   const [page, setPage] = useState(1);
   const [list, setList] = useState<Talent[]>([]);
   const [total, setTotal] = useState(0);
@@ -31,14 +34,16 @@ export function TalentPickerModal({
 
   useEffect(() => {
     if (!open) return;
-    // load initial data
-    refreshAi();
-    runSearch();
     // reset pages
     setAiPage(1);
     setPage(1);
+    // load initial data depending on mode
+    if (!onlyManual) {
+      refreshAi();
+    }
+    runSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, onlyManual]);
 
   // Debounced auto-search when query or skills change
   useEffect(() => {
@@ -79,35 +84,45 @@ export function TalentPickerModal({
       <div className="w-full max-w-3xl max-h-[85vh] overflow-auto rounded-2xl bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h3 className="font-semibold">Alocar para: {roleTitle ?? "[Função]"}</h3>
-            <p className="text-xs text-muted-foreground">Busque um colaborador ou veja as sugestões da IA para esta função.</p>
+            {onlyManual ? (
+              <h3 className="font-semibold">Busca manual</h3>
+            ) : (
+              <>
+                <h3 className="font-semibold">Alocar para: {roleTitle ?? "[Função]"}</h3>
+                <p className="text-xs text-muted-foreground">Busque um colaborador ou veja as sugestões da IA para esta função.</p>
+              </>
+            )}
           </div>
           <button onClick={onClose} className="p-1.5 rounded hover:bg-muted"><X className="size-5" /></button>
         </div>
 
         <div className="p-4">
-          <div className="w-full rounded-lg border bg-background p-1 flex">
-            <button
-              onClick={() => setTab("ai")}
-              className={cn(
-                "flex-1 text-center px-4 py-2 text-sm rounded-lg inline-flex items-center justify-center gap-2",
-                tab === "ai" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-              )}
-            >
-              <Star className={cn("size-4", tab === "ai" ? "text-current" : "text-muted-foreground")} />
-              <span>Sugestão da IA</span>
-            </button>
-            <button
-              onClick={() => setTab("manual")}
-              className={cn(
-                "flex-1 text-center px-4 py-2 text-sm rounded-lg inline-flex items-center justify-center gap-2",
-                tab === "manual" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-              )}
-            >
-              <Search className={cn("size-4", tab === "manual" ? "text-current" : "text-muted-foreground")} />
-              <span>Busca Manual</span>
-            </button>
-          </div>
+          {!onlyManual && (
+            <div className="w-full rounded-lg border bg-background p-1 flex">
+              <>
+                <button
+                  onClick={() => setTab("ai")}
+                  className={cn(
+                    "flex-1 text-center px-4 py-2 text-sm rounded-lg inline-flex items-center justify-center gap-2",
+                    tab === "ai" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                  )}
+                >
+                  <Star className={cn("size-4", tab === "ai" ? "text-current" : "text-muted-foreground")} />
+                  <span>Sugestão da IA</span>
+                </button>
+                <button
+                  onClick={() => setTab("manual")}
+                  className={cn(
+                    "flex-1 text-center px-4 py-2 text-sm rounded-lg inline-flex items-center justify-center gap-2",
+                    tab === "manual" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                  )}
+                >
+                  <Search className={cn("size-4", tab === "manual" ? "text-current" : "text-muted-foreground")} />
+                  <span>Busca Manual</span>
+                </button>
+              </>
+            </div>
+          )}
 
           {tab === "ai" && (
             <div className="mt-4">
@@ -185,7 +200,7 @@ export function TalentPickerModal({
             </div>
           )}
 
-          {tab === "manual" && (
+              {tab === "manual" && (
             <div className="mt-4">
                 <div className="flex gap-2 mb-3">
                 <div className="relative flex-1">
@@ -199,9 +214,15 @@ export function TalentPickerModal({
                   />
                 </div>
                 <input
-                  value={skills.join(", ")}
-                  onChange={(e) => setSkills(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
-                  placeholder="Buscar por Competência"
+                  value={onlyManual ? cpfQuery : skills.join(", ")}
+                  onChange={(e) => {
+                    if (onlyManual) {
+                      setCpfQuery(e.target.value);
+                    } else {
+                      setSkills(e.target.value.split(",").map((s) => s.trim()).filter(Boolean));
+                    }
+                  }}
+                  placeholder={onlyManual ? "Pesquisar por CPF" : "Buscar por Competência"}
                   className="w-56 h-10 pl-3 pr-3 rounded-md border bg-background text-sm"
                 />
               </div>
