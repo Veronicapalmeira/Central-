@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Send, Plus, History, ChevronLeft, Calendar, Info } from "lucide-react";
+import { Send, Plus, History, ChevronLeft, Calendar, Info, User2, Briefcase } from "lucide-react";
 import { PROJECTS } from "@/lib/ptr-data";
 import { cn } from "@/lib/utils";
+import { TalentSearch, TALENTS } from "@/components/ptr/TalentSearch";
 
 export const Route = createFileRoute("/central-solicitacoes/compras-pagamentos")({
   head: () => ({
@@ -64,6 +65,15 @@ function ComprasPagamentosPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [saved, setSaved] = useState<any | null>(null);
   const [sent, setSent] = useState(false);
+
+  function fillWithCurrentUser() {
+    const me = TALENTS && TALENTS.length > 0 ? TALENTS[0] : null;
+    if (!me) return;
+    setOtherName(me.name || "");
+    setOtherEmail(me.email || "");
+    setOtherDOB(me.dob || "");
+    setOtherPhone(me.phone || "");
+  }
 
   function clear() {
     setRequestingForOther(null);
@@ -184,24 +194,30 @@ function ComprasPagamentosPage() {
             </div>
           ) : (
             <>
-              <div className="rounded-xl bg-primary-soft text-foreground border border-primary/20 p-4 mb-2 flex items-start gap-3">
+              <div className="rounded-xl bg-primary-soft text-foreground border border-primary/20 p-4 mb-6 flex items-start gap-3">
                 <Info className="size-5 text-primary mt-0.5 shrink-0" />
                 <div className="text-sm">Preencha os dados da pessoa para a qual está solicitando, caso esteja solicitando em nome de outra pessoa.</div>
               </div>
 
-              <section className="rounded-xl border bg-card p-6 mb-6">
-                <div className="text-sm font-semibold mb-2">Seção 1: Identificação</div>
+                <section className="rounded-xl border bg-card p-6 pb-2 mb-6">
+                <div className="flex items-center gap-3 text-base font-semibold mb-2 pb-2 text-foreground leading-tight"><User2 className="size-4 text-primary" /> <span>Identificação</span></div>
                 <div className="grid gap-3">
                   <label className="mb-3">
                     <div className="text-sm font-medium">Está solicitando para outra pessoa?</div>
-                    <div className="mt-2 inline-flex items-center gap-4">
-                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === true} onChange={() => setRequestingForOther(true)} /> Sim</label>
-                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === false} onChange={() => setRequestingForOther(false)} /> Não</label>
+                      <div className="mt-2 inline-flex items-center gap-4">
+                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === true} onChange={() => { setRequestingForOther(true); setOtherName(""); setOtherEmail(""); setOtherDOB(""); setOtherPhone(""); }} /> Sim</label>
+                      <label className="inline-flex items-center gap-2"><input type="radio" name="outra" checked={requestingForOther === false} onChange={() => { setRequestingForOther(false); fillWithCurrentUser(); }} /> Não</label>
                     </div>
                   </label>
 
                   {requestingForOther === true && (
                     <>
+                      <TalentSearch onPick={(t: any) => {
+                        setOtherName(t.name || "");
+                        setOtherEmail(t.email || "");
+                        setOtherDOB(t.dob || "");
+                        setOtherPhone(t.phone || "");
+                      }} />
                       <label className="mb-3">
                         <div className="text-sm font-medium">Nome completo da pessoa para a qual está solicitando</div>
                         <input value={otherName} onChange={(e) => setOtherName(e.target.value)} placeholder="Insira o valor aqui" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" />
@@ -240,62 +256,40 @@ function ComprasPagamentosPage() {
                         <div className="text-sm font-medium">Número de telefone</div>
                         <input value={otherPhone} onChange={(e) => setOtherPhone(e.target.value)} placeholder="Inserir um número" className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground" />
                       </label>
+                    </>
+                  )}
+                </div>
+              </section>
 
-                      <label className="mb-3">
-                        <div className="text-sm font-medium">Nome do projeto que custeará a despesa</div>
-                        <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
-                          <option value="">Selecionar uma opção</option>
-                          {PROJECTS.map((p: any) => (<option key={p.id} value={p.name}>{p.name}</option>))}
-                        </select>
-                      </label>
+              <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
+                <div className="flex items-center gap-3 text-base font-semibold mb-2 pb-2 text-foreground leading-tight"><Briefcase className="size-4 text-primary" /> <span>Projeto e Tipo de Solicitação</span></div>
+                <div className="grid gap-3">
+                  <label className="mb-3">
+                    <div className="text-sm font-medium">Nome do projeto que custeará a despesa</div>
+                    <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
+                      <option value="">Selecionar uma opção</option>
+                      {PROJECTS.map((p: any) => (<option key={p.id} value={p.name}>{p.name}</option>))}
+                    </select>
+                  </label>
 
-                      <label className="mb-3">
-                        <div className="text-sm font-medium">Qual o tipo de solicitação?</div>
-                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
-                        <option value="">—</option>
+                  <label className="mb-3">
+                    <div className="text-sm font-medium">Qual o tipo de solicitação?</div>
+                      <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
+                        <option value="">selecione</option>
                         <option value="compra_material_servico">Compra de material/serviço</option>
                         <option value="pagamento_material_servico">Pagamento de material/serviço</option>
                         <option value="inscricao_publicacao">Inscrição/publicação</option>
                         <option value="ressarcimento_despesa">Ressarcimento de despesa</option>
                         <option value="outros">Outros</option>
                       </select>
-                      </label>
-                    </>
-                  )}
+                  </label>
                 </div>
               </section>
 
-              {requestingForOther !== false && (
-                <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Seção 2: Projeto e Tipo</div>
-                  <div className="grid gap-3">
-                    <label className="mb-3">
-                      <div className="text-sm font-medium">Nome do projeto que custeará a despesa</div>
-                      <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
-                        <option value="">Selecionar uma opção</option>
-                        {PROJECTS.map((p: any) => (<option key={p.id} value={p.name}>{p.name}</option>))}
-                      </select>
-                    </label>
-
-                    <label className="mb-3">
-                      <div className="text-sm font-medium">Qual o tipo de solicitação?</div>
-                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
-                          <option value="">—</option>
-                          <option value="compra_material_servico">Compra de material/serviço</option>
-                          <option value="pagamento_material_servico">Pagamento de material/serviço</option>
-                          <option value="inscricao_publicacao">Inscrição/publicação</option>
-                          <option value="ressarcimento_despesa">Ressarcimento de despesa</option>
-                          <option value="outros">Outros</option>
-                        </select>
-                    </label>
-                  </div>
-                </section>
-              )}
-
               {/* Campos para Inscrição / Publicação */}
               {requestType === "inscricao_publicacao" && (
-                <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Inscrição / Publicação</div>
+                <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
+                  <div className="text-sm font-semibold mb-2 pb-2">Inscrição / Publicação</div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">CPF</div>
@@ -343,8 +337,8 @@ function ComprasPagamentosPage() {
 
               {/* Campos para Ressarcimento de despesa */}
               {requestType === "ressarcimento_despesa" && (
-                <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Ressarcimento de despesa</div>
+                <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
+                  <div className="text-sm font-semibold mb-2 pb-2">Ressarcimento de despesa</div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">CPF do solicitante</div>
@@ -422,8 +416,8 @@ function ComprasPagamentosPage() {
 
               {/* Campos para Pagamento de material/serviço */}
               {requestType === "pagamento_material_servico" && (
-                <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Pagamento de material/serviço</div>
+                <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
+                  <div className="text-sm font-semibold mb-2 pb-2">Pagamento de material/serviço</div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Nome da empresa</div>
@@ -491,8 +485,8 @@ function ComprasPagamentosPage() {
 
               {/* Campos para Outros */}
               {requestType === "outros" && (
-                <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Outros</div>
+                <section className="rounded-xl border bg-card p-6 pb-4 mb-6">
+                  <div className="text-sm font-semibold mb-2 pb-2">Outros</div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Descrição detalhada da solicitação</div>
@@ -535,7 +529,7 @@ function ComprasPagamentosPage() {
               {/* Detalhamento específico para Compra de material/serviço */}
               {requestType === "compra_material_servico" && (
                 <section className="rounded-xl border bg-card p-6 mb-6">
-                  <div className="text-sm font-semibold mb-2">Detalhamento da Compra</div>
+                  <div className="text-sm font-semibold mb-2 pb-2">Detalhamento da Compra</div>
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Descreva o(s) item(ns), a(s) quantidade(s). Caso haja alguma observação importante, inclua também.</div>
