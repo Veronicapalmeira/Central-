@@ -11,12 +11,14 @@ export function SignDocumentDialog({
   signerName,
   onClose,
   onSigned,
+  customDocumentUrl,
 }: {
   request: AdjustmentRequest;
   projectName: string;
   signerName: string;
   onClose: () => void;
   onSigned: (id: string) => void;
+  customDocumentUrl?: string;
 }) {
   const [step, setStep] = useState<Step>("review");
   const [hasDrawn, setHasDrawn] = useState(false);
@@ -102,39 +104,51 @@ export function SignDocumentDialog({
         </div>
 
         {/* Stepper */}
-        <div className="px-6 py-3 border-b flex items-center gap-2 text-xs">
-          <Pill active={step === "review"} done={step !== "review"}>1. Revisar</Pill>
-          <span className="text-muted-foreground">→</span>
-          <Pill active={step === "sign"} done={step === "processing" || step === "done"}>2. Assinar</Pill>
-          <span className="text-muted-foreground">→</span>
-          <Pill active={step === "processing" || step === "done"} done={step === "done"}>3. Concluído</Pill>
+        <div className="px-6 py-3 border-b flex items-center justify-center text-xs">
+          <div className="inline-flex items-center gap-3">
+            <Pill active={step === "review"} done={step !== "review"}>1. Revisar</Pill>
+            <span className="text-muted-foreground">→</span>
+            <Pill active={step === "sign"} done={step === "processing" || step === "done"}>2. Assinar</Pill>
+            <span className="text-muted-foreground">→</span>
+            <Pill active={step === "processing" || step === "done"} done={step === "done"}>3. Concluído</Pill>
+          </div>
         </div>
 
         {/* Body */}
         <div className="flex-1 overflow-auto">
           {step === "review" && (
             <div className="p-6">
-              <div className="rounded-xl border bg-white text-foreground p-8 shadow-sm font-serif leading-relaxed text-[13px] max-w-2xl mx-auto">
-                <div className="text-center mb-6">
-                  <div className="text-xs tracking-widest text-muted-foreground">CENTRO DE EXCELÊNCIA EM INTELIGÊNCIA ARTIFICIAL — CEIA / UFG</div>
-                  <h2 className="text-base font-bold mt-2 uppercase">Carta de Solicitação de Ajuste de PTR</h2>
-                  <div className="text-xs text-muted-foreground mt-1">Goiânia, {today}</div>
+              {customDocumentUrl ? (
+                <div className="max-w-3xl mx-auto">
+                  {/\.(png|jpe?g|gif|bmp|webp|svg)$/i.test(customDocumentUrl) ? (
+                    <img src={customDocumentUrl} alt="Carta" className="w-full rounded-lg border bg-white" />
+                  ) : (
+                    <iframe src={customDocumentUrl} title="Carta" className="w-full h-[70vh] rounded-lg border bg-white" />
+                  )}
                 </div>
-                <p className="mb-3">À <strong>Fundação de Apoio à Pesquisa — FUNAPE</strong>,</p>
-                <p className="mb-3">
-                  Eu, <strong>{signerName}</strong>, na qualidade de coordenação do projeto <strong>"{projectName}"</strong>, venho por meio desta solicitar formalmente os ajustes abaixo no Plano de Trabalho (PTR) vigente, registrados sob o protocolo <strong>{request.id}</strong> em {request.createdAt}:
-                </p>
-                <ul className="list-disc pl-6 mb-3 space-y-1">
-                  {request.topics.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-                <p className="mb-3">
-                  Os ajustes solicitados foram analisados e aprovados pela equipe administrativa do CEIA, conforme registros do Portal SEIA. Solicito a gentileza de proceder com a execução das alterações junto aos sistemas da FUNAPE.
-                </p>
-                <p className="mt-8 text-center">_____________________________________</p>
-                <p className="text-center text-xs text-muted-foreground">{signerName} — Coordenação do Projeto</p>
-              </div>
+              ) : (
+                <div className="rounded-xl border bg-white text-foreground p-8 shadow-sm font-serif leading-relaxed text-[13px] max-w-2xl mx-auto">
+                  <div className="text-center mb-6">
+                    <div className="text-xs tracking-widest text-muted-foreground">CENTRO DE EXCELÊNCIA EM INTELIGÊNCIA ARTIFICIAL — CEIA / UFG</div>
+                    <h2 className="text-base font-bold mt-2 uppercase">Carta de Solicitação de Ajuste de PTR</h2>
+                    <div className="text-xs text-muted-foreground mt-1">Goiânia, {today}</div>
+                  </div>
+                  <p className="mb-3">À <strong>Fundação de Apoio à Pesquisa — FUNAPE</strong>,</p>
+                  <p className="mb-3">
+                    Eu, <strong>{signerName}</strong>, na qualidade de coordenação do projeto <strong>"{projectName}"</strong>, venho por meio desta solicitar formalmente os ajustes abaixo no Plano de Trabalho (PTR) vigente, registrados sob o protocolo <strong>{request.id}</strong> em {request.createdAt}:
+                  </p>
+                  <ul className="list-disc pl-6 mb-3 space-y-1">
+                    {request.topics.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                  <p className="mb-3">
+                    Os ajustes solicitados foram analisados e aprovados pela equipe administrativa do CEIA, conforme registros do Portal SEIA. Solicito a gentileza de proceder com a execução das alterações junto aos sistemas da FUNAPE.
+                  </p>
+                  <p className="mt-8 text-center">_____________________________________</p>
+                  <p className="text-center text-xs text-muted-foreground">{signerName} — Coordenação do Projeto</p>
+                </div>
+              )}
             </div>
           )}
 

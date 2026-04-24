@@ -5,6 +5,7 @@ import { Search, Calendar, User2, ArrowRight, Plus, History, FileSignature, Chev
 import { AcceptDeadlineDialog } from "@/components/ptr/AcceptDeadlineDialog";
 import { RequestForm } from "@/components/ptr/RequestForm";
 import { SignDocumentDialog } from "@/components/ptr/SignDocumentDialog";
+import carta from "@/assets/carta.png";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/central-solicitacoes/ajuste-ptr")({
@@ -109,7 +110,7 @@ function SolicitacoesPTRPage() {
 
 function ProjectRequestView({ project, onBack }: { project: Project; onBack: () => void }) {
   const [tab, setTab] = useState<"nova" | "historico">("nova");
-  const projectRequests = MOCK_REQUESTS.filter((r) => r.projectId === project.id);
+  const projectRequests = MOCK_REQUESTS.filter((r) => r.projectId === project.id && r.status !== "recusado");
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto">
@@ -237,6 +238,7 @@ function HistoryList({ requests, project }: { requests: AdjustmentRequest[]; pro
           signerName={project.coordinator}
           onClose={() => setSigning(null)}
           onSigned={(id) => setSignedIds((prev) => [...prev, id])}
+          customDocumentUrl={carta}
         />
       )}
     </div>
