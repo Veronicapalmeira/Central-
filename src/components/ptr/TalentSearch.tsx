@@ -13,20 +13,23 @@ type Talent = {
   externo?: boolean;
   /** Carga horária disponível/exercida (ex: "20h", "40h") */
   cargaHoraria?: string;
+  rg?: string;
+  dob?: string; // DD/MM/AAAA
+  phone?: string;
 };
 
 export const TALENTS: Talent[] = [
-  { id: "t1", name: "João da Silva", cpf: "111.111.111-11", vinculo: "Discente", formacao: "Mestrando em Engenharia de Software — UFG", email: "joao.silva@discente.ufg.br", cargaHoraria: "20h" },
-  { id: "t2", name: "Maria Rezende", cpf: "222.222.222-22", vinculo: "Docente", formacao: "Doutora em Ciência da Computação — UFG", email: "maria.rezende@ufg.br", cargaHoraria: "40h" },
-  { id: "t3", name: "Luiz Miguel Costa", cpf: "333.333.333-33", vinculo: "Discente", formacao: "Graduando em Engenharia de Computação — UFG", email: "luiz.miguel@discente.ufg.br", cargaHoraria: "20h" },
-  { id: "t4", name: "Ana Paula Souza", cpf: "444.444.444-44", vinculo: "Técnico", formacao: "Especialista em Gestão de Projetos — UFG", email: "ana.souza@ufg.br", cargaHoraria: "30h" },
-  { id: "t5", name: "Carlos Henrique Lima", cpf: "555.555.555-55", vinculo: "Externo", formacao: "Mestre em IA — PUC-GO", email: "carlos.lima@externo.com", externo: true, cargaHoraria: "10h" },
-  { id: "t6", name: "Renata Oliveira", cpf: "666.666.666-66", vinculo: "Docente", formacao: "Doutora em Engenharia Elétrica — UFG", email: "renata.oliveira@ufg.br", cargaHoraria: "40h" },
-  { id: "t7", name: "Bruno Albuquerque", cpf: "777.777.777-77", vinculo: "Externo", formacao: "Doutor em Visão Computacional — USP", email: "bruno.alb@externo.com", externo: true, cargaHoraria: "12h" },
-  { id: "t8", name: "Fernanda Tavares", cpf: "888.888.888-88", vinculo: "Discente", formacao: "Doutoranda em IA — UFG", email: "fernanda.tavares@discente.ufg.br", cargaHoraria: "20h" },
-  { id: "t9", name: "Patrícia Mendonça (Externa)", cpf: "999.111.222-33", vinculo: "Externo", formacao: "Doutora em Aprendizado de Máquina — UnB", email: "patricia.mendonca@externo.com", externo: true, cargaHoraria: "8h" },
-  { id: "t10", name: "Felipinho Fernandes (Externo)", cpf: "321.654.987-00", vinculo: "Externo", formacao: "Mestre em Engenharia da Computação — UTFPR", email: "felipinho.fernandes@externo.com", externo: true, cargaHoraria: "15h" },
-  { id: "t11", name: "Thiago Neto (Externo)", cpf: "456.789.123-00", vinculo: "Externo", formacao: "Doutor em Ciência da Computação — UFMG", email: "thiago.neto@externo.com", externo: true, cargaHoraria: "20h" },
+  { id: "t1", name: "João da Silva", cpf: "111.111.111-11", vinculo: "Discente", formacao: "Mestrando em Engenharia de Software — UFG", email: "joao.silva@discente.ufg.br", cargaHoraria: "20h", rg: "12.345.678-9", dob: "10/02/1996", phone: "(62) 99999-1111" },
+  { id: "t2", name: "Maria Rezende", cpf: "222.222.222-22", vinculo: "Docente", formacao: "Doutora em Ciência da Computação — UFG", email: "maria.rezende@ufg.br", cargaHoraria: "40h", rg: "98.765.432-1", dob: "05/06/1980", phone: "(62) 98888-2222" },
+  { id: "t3", name: "Luiz Miguel Costa", cpf: "333.333.333-33", vinculo: "Discente", formacao: "Graduando em Engenharia de Computação — UFG", email: "luiz.miguel@discente.ufg.br", cargaHoraria: "20h", rg: "23.456.789-0", dob: "20/11/1998", phone: "(62) 97777-3333" },
+  { id: "t4", name: "Ana Paula Souza", cpf: "444.444.444-44", vinculo: "Técnico", formacao: "Especialista em Gestão de Projetos — UFG", email: "ana.souza@ufg.br", cargaHoraria: "30h", rg: "34.567.890-1", dob: "01/03/1985", phone: "(62) 96666-4444" },
+  { id: "t5", name: "Carlos Henrique Lima", cpf: "555.555.555-55", vinculo: "Externo", formacao: "Mestre em IA — PUC-GO", email: "carlos.lima@externo.com", externo: true, cargaHoraria: "10h", rg: "45.678.901-2", dob: "15/07/1987", phone: "(62) 95555-5555" },
+  { id: "t6", name: "Renata Oliveira", cpf: "666.666.666-66", vinculo: "Docente", formacao: "Doutora em Engenharia Elétrica — UFG", email: "renata.oliveira@ufg.br", cargaHoraria: "40h", rg: "56.789.012-3", dob: "22/09/1978", phone: "(62) 94444-6666" },
+  { id: "t7", name: "Bruno Albuquerque", cpf: "777.777.777-77", vinculo: "Externo", formacao: "Doutor em Visão Computacional — USP", email: "bruno.alb@externo.com", externo: true, cargaHoraria: "12h", rg: "67.890.123-4", dob: "30/12/1982", phone: "(62) 93333-7777" },
+  { id: "t8", name: "Fernanda Tavares", cpf: "888.888.888-88", vinculo: "Discente", formacao: "Doutoranda em IA — UFG", email: "fernanda.tavares@discente.ufg.br", cargaHoraria: "20h", rg: "78.901.234-5", dob: "07/04/1994", phone: "(62) 92222-8888" },
+  { id: "t9", name: "Patrícia Mendonça (Externa)", cpf: "999.111.222-33", vinculo: "Externo", formacao: "Doutora em Aprendizado de Máquina — UnB", email: "patricia.mendonca@externo.com", externo: true, cargaHoraria: "8h", rg: "89.012.345-6", dob: "12/01/1981", phone: "(62) 91111-9999" },
+  { id: "t10", name: "Felipinho Fernandes (Externo)", cpf: "321.654.987-00", vinculo: "Externo", formacao: "Mestre em Engenharia da Computação — UTFPR", email: "felipinho.fernandes@externo.com", externo: true, cargaHoraria: "15h", rg: "90.123.456-7", dob: "03/10/1990", phone: "(62) 90000-1111" },
+  { id: "t11", name: "Thiago Neto (Externo)", cpf: "456.789.123-00", vinculo: "Externo", formacao: "Doutor em Ciência da Computação — UFMG", email: "thiago.neto@externo.com", externo: true, cargaHoraria: "20h", rg: "11.222.333-4", dob: "28/02/1983", phone: "(62) 98888-3333" },
 ];
 
 export function TalentSearch({ onPick }: { onPick: (talent: Talent) => void }) {
@@ -54,13 +57,13 @@ export function TalentSearch({ onPick }: { onPick: (talent: Talent) => void }) {
     <div className="rounded-lg border bg-background p-3 mb-4">
       <div className="flex items-center gap-2 mb-2">
         <Database className="size-4 text-primary" />
-        <span className="text-sm font-medium">Buscar no Banco de Talentos</span>
+        <span className="text-sm font-medium">Buscar colaborador</span>
         <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary-soft text-primary font-semibold">
           Auto-preenchimento
         </span>
       </div>
       <p className="text-xs text-muted-foreground mb-2">
-        Pesquise por nome, CPF, e-mail ou formação. Ao selecionar, os dados básicos serão pré-preenchidos abaixo — basta complementar valor da bolsa, parcelas e fonte.
+        Pesquise por nome, CPF, e-mail ou formação. Ao selecionar, os dados básicos serão pré-preenchidos abaixo.
       </p>
 
       <div className="relative">

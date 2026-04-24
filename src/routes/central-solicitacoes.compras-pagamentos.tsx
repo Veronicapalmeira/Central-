@@ -243,7 +243,7 @@ function ComprasPagamentosPage() {
 
                       <label className="mb-3">
                         <div className="text-sm font-medium">Nome do projeto que custeará a despesa</div>
-                        <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground">
+                        <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
                           <option value="">Selecionar uma opção</option>
                           {PROJECTS.map((p: any) => (<option key={p.id} value={p.name}>{p.name}</option>))}
                         </select>
@@ -251,7 +251,7 @@ function ComprasPagamentosPage() {
 
                       <label className="mb-3">
                         <div className="text-sm font-medium">Qual o tipo de solicitação?</div>
-                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground">
+                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
                         <option value="">—</option>
                         <option value="compra_material_servico">Compra de material/serviço</option>
                         <option value="pagamento_material_servico">Pagamento de material/serviço</option>
@@ -271,7 +271,7 @@ function ComprasPagamentosPage() {
                   <div className="grid gap-3">
                     <label className="mb-3">
                       <div className="text-sm font-medium">Nome do projeto que custeará a despesa</div>
-                      <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground">
+                      <select value={projectLinked} onChange={(e) => setProjectLinked(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
                         <option value="">Selecionar uma opção</option>
                         {PROJECTS.map((p: any) => (<option key={p.id} value={p.name}>{p.name}</option>))}
                       </select>
@@ -279,7 +279,7 @@ function ComprasPagamentosPage() {
 
                     <label className="mb-3">
                       <div className="text-sm font-medium">Qual o tipo de solicitação?</div>
-                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground">
+                        <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 bg-white text-foreground select-arrow">
                           <option value="">—</option>
                           <option value="compra_material_servico">Compra de material/serviço</option>
                           <option value="pagamento_material_servico">Pagamento de material/serviço</option>
