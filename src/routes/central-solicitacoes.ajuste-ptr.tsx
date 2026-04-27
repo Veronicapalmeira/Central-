@@ -5,6 +5,7 @@ import { Search, Calendar, User2, ArrowRight, Plus, History, FileSignature, Chev
 import { AcceptDeadlineDialog } from "@/components/ptr/AcceptDeadlineDialog";
 import { RequestForm } from "@/components/ptr/RequestForm";
 import { SignDocumentDialog } from "@/components/ptr/SignDocumentDialog";
+import RequestDetailsDialog from "@/components/ptr/RequestDetailsDialog";
 import carta from "@/assets/carta.png";
 import { cn } from "@/lib/utils";
 
@@ -176,6 +177,7 @@ function TabButton({ active, onClick, icon, children }: { active: boolean; onCli
 function HistoryList({ requests, project }: { requests: AdjustmentRequest[]; project: Project }) {
   const [signing, setSigning] = useState<AdjustmentRequest | null>(null);
   const [signedIds, setSignedIds] = useState<string[]>([]);
+  const [detailRequest, setDetailRequest] = useState<AdjustmentRequest | null>(null);
   if (requests.length === 0) {
     return (
       <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
@@ -237,7 +239,7 @@ function HistoryList({ requests, project }: { requests: AdjustmentRequest[]; pro
                 <FileSignature className="size-4" /> Assinar carta
               </button>
             )}
-            <button className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent">
+            <button onClick={() => setDetailRequest(r)} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent">
               Ver detalhes
             </button>
           </div>
@@ -253,6 +255,9 @@ function HistoryList({ requests, project }: { requests: AdjustmentRequest[]; pro
           onSigned={(id) => setSignedIds((prev) => [...prev, id])}
           customDocumentUrl={carta}
         />
+      )}
+      {detailRequest && (
+        <RequestDetailsDialog request={detailRequest} open={true} onClose={() => setDetailRequest(null)} />
       )}
     </div>
   );

@@ -131,13 +131,67 @@ export type AdjustmentRequest = {
   createdAt: string;
   status: RequestStatus;
   topics: string[];
+  /** Payload mock do formulário submetido (para visualização de detalhes) */
+  payload?: Record<string, any>;
 };
 
 export const MOCK_REQUESTS: AdjustmentRequest[] = [
-  { id: "REQ-2025-014", projectId: "p2", projectName: "IA para Detecção de Plágio Acadêmico", createdAt: "08/04/2025", status: "aguardando_assinatura", topics: ["Inclusão de Bolsista", "Suplementação de Rubrica"] },
-  { id: "REQ-2025-009", projectId: "p2", projectName: "IA para Detecção de Plágio Acadêmico", createdAt: "10/03/2025", status: "concluido", topics: ["Prorrogação de Vigência"] },
-  { id: "REQ-2025-021", projectId: "p1", projectName: "Sistema de Navegação Autônoma para VANTs", createdAt: "09/04/2025", status: "em_analise", topics: ["Ajuste de Valor de Bolsa", "Anulação de Bolsas"] },
-  { id: "REQ-2025-007", projectId: "p3", projectName: "Plataforma Wave Testing", createdAt: "02/03/2025", status: "recusado", topics: ["Inclusão de Bolsista Externo"] },
+  {
+    id: "REQ-2025-014",
+    projectId: "p2",
+    projectName: "IA para Detecção de Plágio Acadêmico",
+    createdAt: "08/04/2025",
+    status: "aguardando_assinatura",
+    topics: ["Inclusão de Bolsista", "Suplementação de Rubrica"],
+    payload: {
+      inclusao: {
+        active: true,
+        inclusionLines: [
+          { nome: "João Silva", cpf: "222.333.444-55", vinculo: "Contratado", ch: 20, parcelas: 12, valor: 1500, inicio: "05/2025" },
+        ],
+      },
+      suplementacao: {
+        active: true,
+        lines: [
+          { text: "Suplementar R$ 10.000 na rubrica de Material de Consumo - Fonte EMBRAPII" },
+        ],
+      },
+    },
+  },
+  {
+    id: "REQ-2025-009",
+    projectId: "p2",
+    projectName: "IA para Detecção de Plágio Acadêmico",
+    createdAt: "10/03/2025",
+    status: "concluido",
+    topics: ["Prorrogação de Vigência"],
+    payload: {
+      prorrogacao: { active: true, lines: [{ text: "Acrescentar 6 parcelas para Renata Braga" }] },
+    },
+  },
+  {
+    id: "REQ-2025-021",
+    projectId: "p1",
+    projectName: "Sistema de Navegação Autônoma para VANTs",
+    createdAt: "09/04/2025",
+    status: "em_analise",
+    topics: ["Ajuste de Valor de Bolsa", "Anulação de Bolsas"],
+    payload: {
+      valor: { active: true, lines: [{ text: "Aumentar bolsa de Erika Morais de R$ 4.000 para R$ 4.500" }] },
+      anulacaoBolsa: { active: true, lines: [{ text: "Reduzir 2 parcelas de Pedro Augusto Lima" }] },
+    },
+  },
+  {
+    id: "REQ-2025-007",
+    projectId: "p3",
+    projectName: "Plataforma Wave Testing",
+    createdAt: "02/03/2025",
+    status: "recusado",
+    topics: ["Inclusão de Bolsista Externo"],
+    payload: {
+      inclusao: { active: true, inclusionLines: [{ nome: "Maria Oliveira", cpf: "777.888.999-00", vinculo: "Colaborador Externo", ch: 20, parcelas: 6, valor: 1200, inicio: "03/2025" }] },
+    },
+  },
 ];
 
 export const STATUS_LABEL: Record<RequestStatus, string> = {

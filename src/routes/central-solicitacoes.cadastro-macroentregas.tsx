@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { PROJECTS, type Project } from "@/lib/ptr-data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Search, Calendar, User2, ArrowRight, ChevronLeft, Plus, History, Info, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -299,6 +300,7 @@ export default CadastroMacroentregasPage;
   }
 
   function MacroHistoryList({ submissions, project }: { submissions: any[]; project: Project }) {
+    const [detail, setDetail] = useState<any | null>(null);
     if (submissions.length === 0) {
       return (
         <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
@@ -319,10 +321,26 @@ export default CadastroMacroentregasPage;
               <div className="text-xs text-muted-foreground mt-2">Enviado em {s.createdAt}</div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent">Ver detalhes</button>
+              <button onClick={() => setDetail(s)} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent">Ver detalhes</button>
             </div>
           </div>
         ))}
+        {detail && (
+          <Dialog open={true} onOpenChange={(o) => { if (!o) setDetail(null); }}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Detalhes — {detail.title || detail.id}</DialogTitle>
+                <DialogDescription>Enviado em {detail.createdAt}</DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <div><strong>Título:</strong> {detail.title}</div>
+                <div><strong>Macro:</strong> {detail.macro}</div>
+                <div><strong>Período:</strong> {detail.startDate} — {detail.endDate}</div>
+                <div><strong>Responsável:</strong> {detail.responsible}</div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     );
   }

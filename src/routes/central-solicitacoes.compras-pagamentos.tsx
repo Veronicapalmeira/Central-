@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Send, Plus, History, ChevronLeft, Calendar, Info, User2, Briefcase, ShoppingCart, CreditCard, BookOpen, DollarSign, FileText, Search } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PROJECTS } from "@/lib/ptr-data";
 import { cn } from "@/lib/utils";
 import { TALENTS } from "@/components/ptr/TalentSearch";
@@ -67,6 +68,7 @@ function ComprasPagamentosPage() {
   const [saved, setSaved] = useState<any | null>(null);
   const [sent, setSent] = useState(false);
   const [talentOpen, setTalentOpen] = useState(false);
+  const [detail, setDetail] = useState<any | null>(null);
 
   function fillWithCurrentUser() {
     const me = TALENTS && TALENTS.length > 0 ? TALENTS[0] : null;
@@ -624,8 +626,8 @@ function ComprasPagamentosPage() {
             </>
           )}
         </div>
-      ) : (
-        <div>
+          ) : (
+            <div>
           {submissions.length === 0 ? (
             <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Nenhuma solicitação anterior.</div>
           ) : (
@@ -635,9 +637,28 @@ function ComprasPagamentosPage() {
                   <div className="text-sm font-medium">{s.otherName || 'Solicitação'}</div>
                   <div className="text-sm text-muted-foreground">Projeto: {s.projectLinked} • {s.createdAt}</div>
                 </div>
-                <div />
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setDetail(s)} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent">Ver detalhes</button>
+                </div>
               </div>
             ))}</div>
+          )}
+
+          {detail && (
+            <Dialog open={true} onOpenChange={(o) => { if (!o) setDetail(null); }}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Detalhes — {detail.otherName || 'Solicitação'}</DialogTitle>
+                  <DialogDescription>Enviado em {detail.createdAt}</DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+                  <div><strong>Projeto:</strong> {detail.projectLinked}</div>
+                  <div><strong>Tipo:</strong> {detail.requestType}</div>
+                  <div><strong>Descrição:</strong> {detail.itemDescription || detail.usageDescription || detail.otherDescription}</div>
+                  <div><strong>Valor:</strong> {detail.amount}</div>
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       )}
