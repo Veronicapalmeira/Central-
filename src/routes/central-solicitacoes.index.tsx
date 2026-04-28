@@ -27,13 +27,7 @@ const OPTIONS: Option[] = [
     icon: <FileEdit className="size-5" />,
     enabled: true,
   },
-  {
-    to: "/central-solicitacoes/cadastro-macroentregas",
-    title: "Cadastro de Macroentregas",
-    description: "Registre novas macroentregas do projeto",
-    icon: <Target className="size-5" />,
-    enabled: true,
-  },
+  // 'Cadastro de Macroentregas' removido — não existe mais
   {
     to: "/central-solicitacoes/passagens-diarias",
     title: "Passagens e Diárias",

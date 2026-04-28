@@ -15,7 +15,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CentralSolicitacoesIndexRouteImport } from './routes/central-solicitacoes.index'
 import { Route as CentralSolicitacoesPassagensDiariasRouteImport } from './routes/central-solicitacoes.passagens-diarias'
 import { Route as CentralSolicitacoesComprasPagamentosRouteImport } from './routes/central-solicitacoes.compras-pagamentos'
-import { Route as CentralSolicitacoesCadastroMacroentregasRouteImport } from './routes/central-solicitacoes.cadastro-macroentregas'
 import { Route as CentralSolicitacoesAjustePtrRouteImport } from './routes/central-solicitacoes.ajuste-ptr'
 
 const CentralSolicitacoesRoute = CentralSolicitacoesRouteImport.update({
@@ -51,12 +50,6 @@ const CentralSolicitacoesComprasPagamentosRoute =
     path: '/compras-pagamentos',
     getParentRoute: () => CentralSolicitacoesRoute,
   } as any)
-const CentralSolicitacoesCadastroMacroentregasRoute =
-  CentralSolicitacoesCadastroMacroentregasRouteImport.update({
-    id: '/cadastro-macroentregas',
-    path: '/cadastro-macroentregas',
-    getParentRoute: () => CentralSolicitacoesRoute,
-  } as any)
 const CentralSolicitacoesAjustePtrRoute =
   CentralSolicitacoesAjustePtrRouteImport.update({
     id: '/ajuste-ptr',
@@ -69,7 +62,6 @@ export interface FileRoutesByFullPath {
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes': typeof CentralSolicitacoesRouteWithChildren
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
-  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes/compras-pagamentos': typeof CentralSolicitacoesComprasPagamentosRoute
   '/central-solicitacoes/passagens-diarias': typeof CentralSolicitacoesPassagensDiariasRoute
   '/central-solicitacoes/': typeof CentralSolicitacoesIndexRoute
@@ -78,7 +70,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
-  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes/compras-pagamentos': typeof CentralSolicitacoesComprasPagamentosRoute
   '/central-solicitacoes/passagens-diarias': typeof CentralSolicitacoesPassagensDiariasRoute
   '/central-solicitacoes': typeof CentralSolicitacoesIndexRoute
@@ -89,7 +80,6 @@ export interface FileRoutesById {
   '/ajuda': typeof AjudaRoute
   '/central-solicitacoes': typeof CentralSolicitacoesRouteWithChildren
   '/central-solicitacoes/ajuste-ptr': typeof CentralSolicitacoesAjustePtrRoute
-  '/central-solicitacoes/cadastro-macroentregas': typeof CentralSolicitacoesCadastroMacroentregasRoute
   '/central-solicitacoes/compras-pagamentos': typeof CentralSolicitacoesComprasPagamentosRoute
   '/central-solicitacoes/passagens-diarias': typeof CentralSolicitacoesPassagensDiariasRoute
   '/central-solicitacoes/': typeof CentralSolicitacoesIndexRoute
@@ -101,7 +91,6 @@ export interface FileRouteTypes {
     | '/ajuda'
     | '/central-solicitacoes'
     | '/central-solicitacoes/ajuste-ptr'
-    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes/compras-pagamentos'
     | '/central-solicitacoes/passagens-diarias'
     | '/central-solicitacoes/'
@@ -110,7 +99,6 @@ export interface FileRouteTypes {
     | '/'
     | '/ajuda'
     | '/central-solicitacoes/ajuste-ptr'
-    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes/compras-pagamentos'
     | '/central-solicitacoes/passagens-diarias'
     | '/central-solicitacoes'
@@ -120,7 +108,6 @@ export interface FileRouteTypes {
     | '/ajuda'
     | '/central-solicitacoes'
     | '/central-solicitacoes/ajuste-ptr'
-    | '/central-solicitacoes/cadastro-macroentregas'
     | '/central-solicitacoes/compras-pagamentos'
     | '/central-solicitacoes/passagens-diarias'
     | '/central-solicitacoes/'
@@ -176,13 +163,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralSolicitacoesComprasPagamentosRouteImport
       parentRoute: typeof CentralSolicitacoesRoute
     }
-    '/central-solicitacoes/cadastro-macroentregas': {
-      id: '/central-solicitacoes/cadastro-macroentregas'
-      path: '/cadastro-macroentregas'
-      fullPath: '/central-solicitacoes/cadastro-macroentregas'
-      preLoaderRoute: typeof CentralSolicitacoesCadastroMacroentregasRouteImport
-      parentRoute: typeof CentralSolicitacoesRoute
-    }
     '/central-solicitacoes/ajuste-ptr': {
       id: '/central-solicitacoes/ajuste-ptr'
       path: '/ajuste-ptr'
@@ -195,7 +175,6 @@ declare module '@tanstack/react-router' {
 
 interface CentralSolicitacoesRouteChildren {
   CentralSolicitacoesAjustePtrRoute: typeof CentralSolicitacoesAjustePtrRoute
-  CentralSolicitacoesCadastroMacroentregasRoute: typeof CentralSolicitacoesCadastroMacroentregasRoute
   CentralSolicitacoesComprasPagamentosRoute: typeof CentralSolicitacoesComprasPagamentosRoute
   CentralSolicitacoesPassagensDiariasRoute: typeof CentralSolicitacoesPassagensDiariasRoute
   CentralSolicitacoesIndexRoute: typeof CentralSolicitacoesIndexRoute
@@ -203,8 +182,6 @@ interface CentralSolicitacoesRouteChildren {
 
 const CentralSolicitacoesRouteChildren: CentralSolicitacoesRouteChildren = {
   CentralSolicitacoesAjustePtrRoute: CentralSolicitacoesAjustePtrRoute,
-  CentralSolicitacoesCadastroMacroentregasRoute:
-    CentralSolicitacoesCadastroMacroentregasRoute,
   CentralSolicitacoesComprasPagamentosRoute:
     CentralSolicitacoesComprasPagamentosRoute,
   CentralSolicitacoesPassagensDiariasRoute:
